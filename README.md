@@ -24,23 +24,24 @@ You are a DevOps Engineer tasked with Dockerizing a custom application for produ
 
 ### 🔄 Flow Explanation
 
-1. **DevOps Engineer (Dev-1)**
-   - Builds a **base image** with Ubuntu + Apache
+1. **DevOps Engineer**
+   - Builds a reusable **base image** (Ubuntu + Apache)
    - Pushes it to Docker Hub
 
 2. **Docker Hub**
+   - Acts as a central registry
    - Stores:
      - Base Image
      - Application Image (after developer adds code)
 
-3. **Developer (Dev-2)**
-   - Uses the base image
+3. **Developer**
+   - Pulls the base image
    - Adds application code
    - Builds final application image
 
-4. **Production**
-   - Pulls final image
-   - Runs containerized application
+4. **Production Environment**
+   - Pulls the final image
+   - Runs the containerized application
 
 ---
 
@@ -58,7 +59,7 @@ case-study/
 
 ---
 
-## 🧱 Base Image (DevOps)
+## 🧱 Base Image (DevOps Layer)
 
 ### Dockerfile: `Dockerfile.base`
 
@@ -79,24 +80,24 @@ CMD ["apachectl", "-D", "FOREGROUND"]
 ### 🔨 Build Base Image
 
 ```bash
-docker build -f Dockerfile.base -t anubhavbuildz/ubuntu-apache-base:1.0 .
+docker build -f Dockerfile.base -t yourrepo/ubuntu-apache-base:1.0 .
 ```
 
 ### 📤 Push to Docker Hub
 
 ```bash
 docker login
-docker push anubhavbuildz/ubuntu-apache-base:1.0
+docker push yourrepo/ubuntu-apache-base:1.0
 ```
 
 ---
 
-## 👨‍💻 Developer Image
+## 👨‍💻 Application Image (Developer Layer)
 
 ### Dockerfile: `developer/Dockerfile`
 
 ```dockerfile
-FROM anubhavbuildz/ubuntu-apache-base:1.0
+FROM yourrepo/ubuntu-apache-base:1.0
 
 COPY . /var/www/html/
 
@@ -105,9 +106,10 @@ EXPOSE 80
 CMD ["apachectl", "-D", "FOREGROUND"]
 ```
 
-### 📄 Sample App (`index.html`)
+### 📄 Sample Application
 
-A simple HTML file that will replace the default Apache page.
+Developers only need to provide their application files (e.g., `index.html`).
+These files will automatically replace the default Apache page.
 
 ---
 
@@ -115,23 +117,21 @@ A simple HTML file that will replace the default Apache page.
 
 ```bash
 cd developer
-docker build -t anubhavbuildz/custom-apache-app:1.0 .
+docker build -t yourrepo/custom-apache-app:1.0 .
 ```
 
 ### 📤 Push Final Image
 
 ```bash
-docker push anubhavbuildz/custom-apache-app:1.0
+docker push yourrepo/custom-apache-app:1.0
 ```
-
-\*\*\*for reference only
 
 ---
 
 ## 🚀 Run in Production
 
 ```bash
-docker run -d --name apache-app -p 80:80 anubhavbuildz/custom-apache-app:1.0
+docker run -d --name apache-app -p 80:80 yourrepo/custom-apache-app:1.0
 ```
 
 Open in browser:
@@ -144,11 +144,11 @@ http://localhost
 
 ## ✅ Key Benefits
 
-- 🔁 Reusable base image
-- 👨‍💻 Developers only focus on code
-- 📦 Standardized environment
-- 🚀 Easy deployment to production
-- 🔒 Isolation using containers
+- 🔁 Reusable base image across teams
+- 👨‍💻 Developers focus only on application code
+- 📦 Consistent and standardized environments
+- 🚀 Faster and simpler deployments
+- 🔒 Secure and isolated execution using containers
 
 ---
 
@@ -158,14 +158,21 @@ This architecture follows:
 
 > **"Build once, reuse everywhere"**
 
-- Base image = platform
-- App image = business logic
+- Base Image → Platform Layer
+- Application Image → Business Logic Layer
 
 ---
 
 ## 🏁 Conclusion
 
-A custom Ubuntu + Apache base image is created and pushed to Docker Hub. Developers build on top of this image by simply adding their code. This ensures consistency, scalability, and simplified deployment across environments.
+A reusable Ubuntu + Apache base image is created and pushed to Docker Hub.
+Developers build on top of this image by simply adding their code.
+
+This approach ensures:
+
+- consistency across environments
+- reduced developer overhead
+- scalable and production-ready deployments
 
 ---
 
